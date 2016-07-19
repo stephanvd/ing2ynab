@@ -1,17 +1,20 @@
-# ing2ynab
+# Ing2ynab
 
-Convert mijn.ing.nl CSV format to YNAB format.
-
-_This is still a very early version. Handle with care._
+**TODO: Add description**
 
 ## Installation
 
-Download ing2ynab (mac) or ing2ynab.exe (windows) from [releases](https://github.com/stephanvd/ing2ynab/releases).
+If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
 
-## Usage
+  1. Add ing2ynab to your list of dependencies in `mix.exs`:
 
-* Put the CSV file exported from mijn.ing.nl in the same directory as ing2ynab
-* Rename the file to __ing.csv__
-* Run ing2ynab
-* Import __ynab.csv__ into YNAB
-* Get rich =)
+        def deps do
+          [{:ing2ynab, "~> 0.0.1"}]
+        end
+
+  2. Ensure ing2ynab is started before your application:
+
+        def application do
+          [applications: [:ing2ynab]]
+        end
+
