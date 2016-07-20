@@ -43,7 +43,7 @@ func main() {
 
 	for _, row := range rawCSVdata {
 		if row[0] != "Datum" {
-			date := strings.Replace(row[0], "-", "/", -1)
+			date := row[0][0:4]+"/"+row[0][4:6]+"/"+row[0][6:8]
 			payee := row[1]
 			category := ""
 			memo := row[8]
