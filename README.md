@@ -3,10 +3,15 @@
 Syncs mijn.ing.nl transactions to app.youneedabudget.com
 
 - Logs into mijn.ing.nl
-- Grabs 16 latest transactions
+- Grabs the latest transactions
 - Builds a CSV
 - Uploads to nYNAB
-- Trust YNAB to filter duplicates
+
+I've developed this for hourly cron syncs.
+
+Some hardcoded assumptions:
+- It picks the first budget account in the list
+- It's limited to 16 transactions currently
 
 ## Installation:
 
