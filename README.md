@@ -2,13 +2,11 @@
 
 - [x] Logs into mijn.ing.nl
 - [x] Grabs transactions
-- [ ] Filters on date
+- [x] Filters on date
 - [x] Builds a CSV
-- [ ] Uploads to nYNAB
+- [x] Uploads to nYNAB
 
 ## Installation:
-
-*Tested on OS X*
 
 ```
 npm install -g phantomjs-prebuilt
@@ -18,4 +16,11 @@ npm install
 
 ## Usage:
 
-`ING_USERNAME=user ING_PASSWORD=123456 DATE=22-07-2016 npm start`
+```
+ING_USERNAME=user \
+ING_PASSWORD=123456 \
+YNAB_USERNAME=user \
+YNAB_PASSWORD=123456 \
+DATE=22-07-2016 \
+npm start
+```

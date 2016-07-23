@@ -1,4 +1,8 @@
-var casper = require('casper').create({verbose: false, logLevel: "debug"});
+var casper = require('casper').create({
+    viewportSize: { width: 1280, height: 800 },
+    verbose: false,
+    logLevel: "debug"
+});
 var system = require('system');
 var dateFormat = require('dateformat');
 var convert = require('./convert');
@@ -8,17 +12,23 @@ var yesterday = (function(d) {
     return dateFormat(d, "dd-mm-yyyy");
 })(new Date)
 
+var dimensions = { top: 0, left: 0, width: 1920, height: 1080 }
+
 var date = system.env.DATE || yesterday;
-var username = system.env.ING_USERNAME;
-var password = system.env.ING_PASSWORD;
+var ingUsername = system.env.ING_USERNAME;
+var ingPassword = system.env.ING_PASSWORD;
+var ynabUsername = system.env.YNAB_USERNAME;
+var ynabPassword = system.env.YNAB_PASSWORD;
+
 var transactions = [];
+var dateFormatActionid = null;
 
 casper.start('https://mijn.ing.nl/internetbankieren/SesamLoginServlet', function() {
     this.echo('Visiting: ' + this.getTitle());
 
     this.fillSelectors('form#login', {
-        '#gebruikersnaam input': username,
-        '#wachtwoord input': password
+        '#gebruikersnaam input': ingUsername,
+        '#wachtwoord input': ingPassword
     }, true);
 });
 
@@ -29,7 +39,8 @@ casper.waitForSelector("#receivedTransactions tbody tr:nth-child(5) td:not(:empt
 
 casper.waitForSelector("#receivedTransactions tbody tr:nth-child(14) td:not(:empty)", function() {
     this.echo('Showing more: ' + this.getTitle());
-    this.capture('screenshot.png');
+    this.capture('transactions.png');
+
 
     transactions = transactions.concat(this.evaluate(function() {
         rows = document.querySelectorAll('#receivedTransactions > tbody tr');
@@ -40,12 +51,70 @@ casper.waitForSelector("#receivedTransactions tbody tr:nth-child(14) td:not(:emp
             });
         });
     }));
-})
 
-casper.run(function() {
     this.echo("Converting...");
     var count = convert(transactions, date);
-    this.echo("Converted "  + count + " transactions for " + date);
-    this.echo("Finished! Closing...");
+    if(count > 0) {
+        this.echo("Converted "  + count + " transactions for " + date);
+    } else {
+        this.echo("Nothing to upload");
+        this.exit(0);
+    }
+});
+
+casper.thenOpen('https://app.youneedabudget.com/users/login');
+
+casper.waitForSelector('.login-username', function() {
+    casper.sendKeys('.login-username', ynabUsername);
+    casper.sendKeys('.login-password', ynabPassword);
+    this.click('.users-form button.button-primary');
+});
+
+casper.waitForSelector(".budget-header-totals-amount", function() {
+    this.echo("Logged in to YNAB");
+    this.click('.nav-account-row');
+});
+
+casper.waitForSelector(".accounts-toolbar-file-import-transactions", function() {
+    this.click('.accounts-toolbar-file-import-transactions');
+});
+
+casper.waitForSelector(".modal-import-choose-file", function() {
+    this.echo("Uploading file");
+    this.page.uploadFile('input[type="file"]', 'ynab.csv');
+});
+
+casper.waitForSelector(".modal-import-review", function() {
+    this.click('.import-preview-select-date input')
+});
+
+casper.waitForSelector(".import-preview-select-date .ynab-select-option", function() {
+    emberAction = this.evaluate(function() {
+        return Array.prototype.filter.call(
+            document.querySelectorAll(".import-preview-select-date .ynab-select-option"), function(x) {
+                return /DD\/MM\/YYYY/.test(x.innerHTML);
+            }
+        )[0].dataset.emberAction;
+    });
+
+   this.mouse.click("button[data-ember-action='" + emberAction + "']");
+});
+
+casper.waitWhileSelector(".import-preview-select-date .ynab-select-option", function() {
+    this.capture('import.png');
+    this.click('.modal-import-review button.button-primary');
+});
+
+casper.waitForText("Import Successful", function() {
+    this.echo("Import Successful");
+    this.click('.modal-import-successful button.button-primary');
+});
+
+casper.waitWhileSelector(".import-preview-select-date .ynab-select-option", function() {
+    this.echo("Finished!");
+});
+
+casper.run(function() {
+    this.echo("Closing...");
     this.exit(0);
 });

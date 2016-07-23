@@ -8,7 +8,7 @@ module.exports = function(transactions, date) {
   data += Array.prototype.join.call(
     Array.prototype.map.call(transactions, function(tx) {
       return Array.prototype.join.call([
-        wrap(tx[0]),
+        wrap(formatDate(tx[0])),
         wrap(tx[1]),
         null,
         null,
@@ -26,20 +26,23 @@ module.exports = function(transactions, date) {
 
 var transactionsForDate = function(transactions, date) {
   return Array.prototype.filter.call(transactions, function(tx) {
-    console.log('tx-date', tx[0], date, tx[0] == date)
     return tx[0] == date;
   });
 }
 
+var formatDate = function(date) {
+  return date.replace(/-/g, '/');
+};
+
 var outflow = function(amount) {
   var match = /(\d*,\d{2})\s*Af/.exec(amount);
   if(match) return match[1];
-}
+};
 
 var inflow = function(amount) {
   var match = /(\d*,\d{2})\s*Bij/.exec(amount);
   if(match) return match[1];
-}
+};
 
 var wrap = function(content) {
   if (content === undefined || content === null) {
@@ -47,4 +50,4 @@ var wrap = function(content) {
   }
 
   return '"' + content + '"';
-}
+};
