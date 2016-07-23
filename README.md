@@ -1,10 +1,12 @@
-# ING converter for nYNAB
+# ing2ynab
 
-- [x] Logs into mijn.ing.nl
-- [x] Grabs transactions
-- [x] Filters on date
-- [x] Builds a CSV
-- [x] Uploads to nYNAB
+Syncs mijn.ing.nl transactions to app.youneedabudget.com
+
+- Logs into mijn.ing.nl
+- Grabs 16 latest transactions
+- Builds a CSV
+- Uploads to nYNAB
+- Trust YNAB to filter duplicates
 
 ## Installation:
 
@@ -21,6 +23,5 @@ ING_USERNAME=user \
 ING_PASSWORD=123456 \
 YNAB_USERNAME=user \
 YNAB_PASSWORD=123456 \
-DATE=22-07-2016 \
-npm start
+./ing2ynab
 ```

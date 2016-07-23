@@ -4,24 +4,14 @@ var casper = require('casper').create({
     logLevel: "debug"
 });
 var system = require('system');
-var dateFormat = require('dateformat');
 var convert = require('./convert');
 
-var yesterday = (function(d) {
-    d.setDate(d.getDate() - 1);
-    return dateFormat(d, "dd-mm-yyyy");
-})(new Date)
-
-var dimensions = { top: 0, left: 0, width: 1920, height: 1080 }
-
-var date = system.env.DATE || yesterday;
 var ingUsername = system.env.ING_USERNAME;
 var ingPassword = system.env.ING_PASSWORD;
 var ynabUsername = system.env.YNAB_USERNAME;
 var ynabPassword = system.env.YNAB_PASSWORD;
 
 var transactions = [];
-var dateFormatActionid = null;
 
 casper.start('https://mijn.ing.nl/internetbankieren/SesamLoginServlet', function() {
     this.echo('Visiting: ' + this.getTitle());
@@ -53,9 +43,9 @@ casper.waitForSelector("#receivedTransactions tbody tr:nth-child(14) td:not(:emp
     }));
 
     this.echo("Converting...");
-    var count = convert(transactions, date);
+    var count = convert(transactions);
     if(count > 0) {
-        this.echo("Converted "  + count + " transactions for " + date);
+        this.echo("Converted "  + count + " transactions");
     } else {
         this.echo("Nothing to upload");
         this.exit(0);

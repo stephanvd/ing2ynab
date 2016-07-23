@@ -1,9 +1,7 @@
 var fs = require('fs');
 
-module.exports = function(transactions, date) {
+module.exports = function(transactions) {
   var data = "Date,Payee,Category,Memo,Outflow,Inflow\n";
-
-  transactions = transactionsForDate(transactions, date);
 
   data += Array.prototype.join.call(
     Array.prototype.map.call(transactions, function(tx) {
@@ -23,12 +21,6 @@ module.exports = function(transactions, date) {
 
   return transactions.length;
 };
-
-var transactionsForDate = function(transactions, date) {
-  return Array.prototype.filter.call(transactions, function(tx) {
-    return tx[0] == date;
-  });
-}
 
 var formatDate = function(date) {
   return date.replace(/-/g, '/');

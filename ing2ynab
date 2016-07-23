@@ -1,0 +1,3 @@
+location=`dirname $0`
+cd $location
+npm start
