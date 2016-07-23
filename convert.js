@@ -3,6 +3,8 @@ var fs = require('fs');
 module.exports = function(transactions, date) {
   var data = "Date,Payee,Category,Memo,Outflow,Inflow\n";
 
+  transactions = transactionsForDate(transactions, date);
+
   data += Array.prototype.join.call(
     Array.prototype.map.call(transactions, function(tx) {
       return Array.prototype.join.call([
@@ -19,8 +21,15 @@ module.exports = function(transactions, date) {
 
   fs.write('ynab.csv', data, 'w');
 
-  return transactions.length - 1;
+  return transactions.length;
 };
+
+var transactionsForDate = function(transactions, date) {
+  return Array.prototype.filter.call(transactions, function(tx) {
+    console.log('tx-date', tx[0], date, tx[0] == date)
+    return tx[0] == date;
+  });
+}
 
 var outflow = function(amount) {
   var match = /(\d*,\d{2})\s*Af/.exec(amount);
