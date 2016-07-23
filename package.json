@@ -3,19 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "directories": {
-    "example": "examples",
-    "test": "test"
-  },
+  "directories": {},
   "dependencies": {
-    "chai": "^3.5.0"
+    "dateformat": "^1.0.12"
   },
-  "devDependencies": {
-    "mocha": "^2.5.3"
-  },
+  "devDependencies": {},
   "scripts": {
-    "test": "mocha"
+    "start": "casperjs index.js"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Stephan van Diepen",
+  "license": "MIT"
 }
