@@ -33,7 +33,14 @@ casper.waitForSelector("#receivedTransactions tbody tr:nth-child(14) td:not(:emp
 
 
     transactions = transactions.concat(this.evaluate(function() {
-        rows = document.querySelectorAll('#receivedTransactions > tbody tr');
+        var rows = document.querySelectorAll('#receivedTransactions > tbody tr');
+
+        rows = Array.prototype.filter.call(rows, function(row) {
+            return Array.prototype.some.call(row.children, function(col) {
+                var matcher = /Dit is een reservering/;
+                return !matcher.test(col.textContent);
+            });
+        });
 
         return Array.prototype.map.call(rows, function(row) {
             return Array.prototype.map.call(row.children, function(col) {
