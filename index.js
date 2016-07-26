@@ -31,26 +31,19 @@ casper.waitForSelector("#receivedTransactions tbody tr:nth-child(14) td:not(:emp
     this.echo('Showing more: ' + this.getTitle());
     this.capture('transactions.png');
 
-
     transactions = transactions.concat(this.evaluate(function() {
         var rows = document.querySelectorAll('#receivedTransactions > tbody tr');
 
-        rows = Array.prototype.filter.call(rows, function(row) {
-            return Array.prototype.some.call(row.children, function(col) {
-                var matcher = /Dit is een reservering/;
-                return !matcher.test(col.textContent);
+        return Array.prototype.map.call(rows, function(row) {
+            return Array.prototype.map.call(row.children, function(col) {
+                return {textContent: col.textContent, innerHTML: col.innerHTML};
             });
         });
 
-        return Array.prototype.map.call(rows, function(row) {
-            return Array.prototype.map.call(row.children, function(col) {
-                return col.textContent;
-            });
-        });
     }));
 
     this.echo("Converting...");
-    var count = convert(transactions);
+    var count = convert(casper, transactions);
     if(count > 0) {
         this.echo("Converted "  + count + " transactions");
     } else {
