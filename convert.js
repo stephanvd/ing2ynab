@@ -50,12 +50,12 @@ var formatDate = function(date) {
 };
 
 var outflow = function(amount) {
-  var match = /(\d*,\d{2})\s*Af/.exec(amount);
+  var match = /((\d|\.|,)*)\s*Af/.exec(amount);
   if(match) return match[1];
 };
 
 var inflow = function(amount) {
-  var match = /(\d*,\d{2})\s*Bij/.exec(amount);
+  var match = /((\d|\.|,)*)\s*Bij/.exec(amount);
   if(match) return match[1];
 };
 
