@@ -4,11 +4,11 @@ module.exports = function(casper, transactions) {
   var data = "Date,Payee,Category,Memo,Outflow,Inflow\n";
 
   transactions = Array.prototype.filter.call(transactions, function(row) {
-      if (row.length < 2) return false;
-      return Array.prototype.some.call(row, function(col) {
-          var matcher = /Dit is een reservering/;
-          return !matcher.test(col.textContent);
-      });
+    if (row.length < 2) return false;
+    return !Array.prototype.some.call(row, function(col) {
+      var matcher = /Dit is een reservering/;
+      return matcher.test(col.textContent);
+    });
   });
 
   data += Array.prototype.join.call(
