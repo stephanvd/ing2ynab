@@ -1,56 +1,17 @@
+var fs = require('fs');
+var system = require('system');
 var casper = require('casper').create({
   viewportSize: { width: 1280, height: 800 },
   verbose: false,
   logLevel: "debug"
 });
-var system = require('system');
-var convert = require('./convert');
 
-var ingUsername = system.env.ING_USERNAME;
-var ingPassword = system.env.ING_PASSWORD;
-var ynabUsername = system.env.YNAB_USERNAME;
-var ynabPassword = system.env.YNAB_PASSWORD;
+var ynabUsername = system.env.C2Y_YNAB_USERNAME;
+var ynabPassword = system.env.C2Y_YNAB_PASSWORD;
+var bank = system.env.C2Y_BANK || 'nl/ing';
 
-var transactions = [];
-
-casper.start('https://mijn.ing.nl/internetbankieren/SesamLoginServlet', function() {
-  this.echo('Visiting: ' + this.getTitle());
-
-  this.fillSelectors('form#login', {
-    '#gebruikersnaam input': ingUsername,
-    '#wachtwoord input': ingPassword
-  }, true);
-});
-
-casper.waitForSelector("#receivedTransactions tbody tr:nth-child(5) td:not(:empty)", function() {
-  this.echo('Visiting: ' + this.getTitle());
-  this.click('#showMore')
-});
-
-casper.waitForSelector("#receivedTransactions tbody tr:nth-child(14) td:not(:empty)", function() {
-  this.echo('Showing more: ' + this.getTitle());
-  this.capture('transactions.png');
-
-  transactions = transactions.concat(this.evaluate(function() {
-    var rows = document.querySelectorAll('#receivedTransactions > tbody tr');
-
-    return Array.prototype.map.call(rows, function(row) {
-      return Array.prototype.map.call(row.children, function(col) {
-        return {textContent: col.textContent, innerHTML: col.innerHTML};
-      });
-    });
-
-  }));
-
-  this.echo("Converting...");
-  var count = convert(casper, transactions);
-  if(count > 0) {
-    this.echo("Converted "  + count + " transactions");
-  } else {
-    this.echo("Nothing to upload");
-    this.exit(0);
-  }
-});
+casper.echo('Fetching transactions from ' + bank)
+require('banks/' + bank)(casper);
 
 casper.thenOpen('https://app.youneedabudget.com/users/login');
 
@@ -75,23 +36,6 @@ casper.waitForSelector(".modal-import-choose-file", function() {
 });
 
 casper.waitForSelector(".modal-import-review", function() {
-  this.click('.import-preview-select-date input')
-});
-
-casper.waitForSelector(".import-preview-select-date .ynab-select-option", function() {
-  emberAction = this.evaluate(function() {
-    return Array.prototype.filter.call(
-      document.querySelectorAll(".import-preview-select-date .ynab-select-option"), function(x) {
-        return /DD\/MM\/YYYY/.test(x.innerHTML);
-      }
-      )[0].dataset.emberAction;
-  });
-
-  this.mouse.click("button[data-ember-action='" + emberAction + "']");
-});
-
-casper.waitWhileSelector(".import-preview-select-date .ynab-select-option", function() {
-  this.capture('import.png');
   this.click('.modal-import-review button.button-primary');
 });
 
