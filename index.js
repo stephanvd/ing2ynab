@@ -3,7 +3,8 @@ var system = require('system');
 var casper = require('casper').create({
   viewportSize: { width: 1280, height: 800 },
   verbose: false,
-  logLevel: "debug"
+  logLevel: "debug",
+  waitTimeout: 10 * 1000
 });
 
 var ynabUsername = system.env.C2Y_YNAB_USERNAME;
